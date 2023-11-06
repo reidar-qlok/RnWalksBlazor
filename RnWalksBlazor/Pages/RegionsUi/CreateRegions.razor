@@ -1,0 +1,55 @@
+﻿@page "/createregions"
+@using MudBlazor
+@using RnWalksBlazor.Models;
+@using RnWalksBlazor.Services;
+@using System.Text.Json;
+@using System.Text;
+@using System.Net.Http.Headers;
+@inject NavigationManager _navigationManager
+@inject HttpClient Http
+@inject ILocalStorageService _localStorageService
+<div class="ma-5 d-flex justify-center">
+<MudPaper Width="500px" Class="pa-4">
+    <MudText Typo="Typo.h5">Create New Region</MudText>
+    <MudForm Model="newRegion">
+        @*  <MudTextField T="Guid" Label="Id" @bind-Value="newRegion.Id" For="@(() => newRegion.Id)" /> *@
+        <MudTextField T="string" Label="Region" @bind-Value="newRegion.Code" For="@(() => newRegion.Code)" />
+        <MudTextField T="string" Label="Name" @bind-Value="newRegion.Name" For="@(() => newRegion.Name)" />
+        <MudTextField T="string" Label="RegionImageUrl" @bind-Value="newRegion.RegionImageUrl" For="@(() => newRegion.RegionImageUrl)" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CreateNewRegion">Create Region</MudButton>
+    </MudForm>
+</MudPaper>
+</div>
+@code {
+    private Region newRegion = new Region();
+    private async Task CreateNewRegion()
+    {
+        try
+        {
+            var token = await _localStorageService.GetItemAsync<string>("JwtToken");
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            // Replace with your actual API endpoint
+            var response = await Http.PostAsJsonAsync("api/regions", newRegion);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // var jsonContent = JsonSerializer.Serialize(newRegion);
+                // var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                // // Send a POST request to the specified Uri with the given content
+                // var answer = await Http.PostAsync("api/regions", content);
+                _navigationManager.NavigateTo("/countryregions");
+            }
+            else
+            {
+                // Handle the error, possibly displaying a message to the user
+
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that occur during the HTTP request
+
+        }
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/countryregions"
+@inject NavigationManager _navigationManager
+@using RnWalksBlazor.Models;
+@using RnWalksBlazor.Services;
+@inject RegionService regionService
+<div class="ma-5 d-flex justify-center">
+    <a href="/createregions">Create new Region</a>
+</div>
+<div class="ma-5 d-flex justify-center" width="500px">
+    <MudTable Items="@myregions">
+        <HeaderContent>
+            @* <MudTh>Id</MudTh> *@
+            <MudTh>Code</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>RegionImageUrl</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+           @*@ <MudTd DataLabel="Id">@context.Id</MudTd>*@
+            <MudTd DataLabel="Code">@context.Code</MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            @if (!string.IsNullOrEmpty(context.RegionImageUrl))
+            {
+                <MudTd DataLabel="RegionImageUrl"><MudImage Src="@context.RegionImageUrl" Width="200" Alt="Image description" /></MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="RegionImageUrl"></MudTd>
+            }
+            @* <div>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => EditRegion(@context.Id))">Update</MudButton>
+            </div>
+            <div>
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => DeleteRegion(@context.Id))">Delete</MudButton>
+            </div> *@
+
+        </RowTemplate>
+    </MudTable>
+</div>
+
+@code {
+    private List<Region> myregions;
+    protected override async Task OnInitializedAsync()
+    {
+        myregions = await regionService.GetAllRegionsAsync();
+    }
+}

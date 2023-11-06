@@ -53,7 +53,7 @@
                 var tokenResponse = await response.Content.ReadFromJsonAsync<JwtTokenResponseVM>();
                 await _localStorageService.SetItemAsync<string>("JwtToken", tokenResponse.AccessToken);
 
-                _navigationManager.NavigateTo("/loginconfirmation");
+                _navigationManager.NavigateTo("/countryregions");
             }
         }
     }

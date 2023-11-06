@@ -50,10 +50,11 @@
             }
             if (response.StatusCode==HttpStatusCode.OK)
             {
+                var tokenResponse = await response.Content.ReadFromJsonAsync<JwtTokenResponseVM>();
+                await _localStorageService.SetItemAsync<string>("JwtToken", tokenResponse.AccessToken);
+
                 _navigationManager.NavigateTo("/loginconfirmation");
             }
-
-
         }
     }
 }

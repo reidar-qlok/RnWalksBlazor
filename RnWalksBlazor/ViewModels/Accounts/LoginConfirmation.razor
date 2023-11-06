@@ -1,9 +1,24 @@
 ﻿@page "/loginconfirmation"
-<h3>LoginConfirmation</h3>
-<MudChip Color="Color.Primary">
-    <h3>Your login was successfull, and you should have a token</h3>
-</MudChip>
+@inject ILocalStorageService _localStorage
+<div class="ma-5 d-flex justify-center">
+    <MudChip Color="Color.Primary">
+        <h3>Your login was successfull, and you should have a token now</h3>
+    </MudChip>
+</div>
+<div class="ma-5 d-flex justify-center">
+    <button class="btn btn-primary" @onclick="ShowToken">Show the token</button>
+    <br /><br /><br />
+    <p padding="30px">@currentToken</p>
+</div>
+
+
 
 @code {
+    private string currentToken="";
+    private async Task ShowToken()
+    {
+        var token = await _localStorage.GetItemAsync<string>("JwtToken");
+        currentToken = "Bearer " + token;
 
+    }
 }

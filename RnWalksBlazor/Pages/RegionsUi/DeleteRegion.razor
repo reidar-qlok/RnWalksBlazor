@@ -1,0 +1,77 @@
+﻿@page "/deleteregion/{Id}"
+@using MudBlazor
+@using RnWalksBlazor.Models;
+@using RnWalksBlazor.Services;
+@using System.Text.Json;
+@using System.Text;
+@using System.Net.Http.Headers;
+@inject RegionService regionsService
+@inject NavigationManager _navigationManager
+@inject HttpClient Http
+@inject ILocalStorageService _localStorageService
+<div class="ma-5 d-flex justify-center">
+    <MudPaper Width="500px" Class="pa-4">
+        <MudText Typo="Typo.h5">Create New Region</MudText>
+        <MudForm Model="deleteRegion" @ref="form">
+            <MudTextField T="Guid" Label="Id" @bind-Value="deleteRegion.Id" For="@(() => deleteRegion.Id)" />
+            <MudTextField T="string" Label="Region" @bind-Value="deleteRegion.Code" For="@(() => deleteRegion.Code)" />
+            <MudTextField T="string" Label="Name" @bind-Value="deleteRegion.Name" For="@(() => deleteRegion.Name)" />
+            @if (!string.IsNullOrEmpty(deleteRegion.RegionImageUrl))
+            {
+                <MudTd DataLabel="RegionImageUrl"><MudImage Src="@deleteRegion.RegionImageUrl" Width="200" Alt="Image description" /></MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="RegionImageUrl"></MudTd>
+            }
+            <MudTextField T="string" Label="RegionImageUrl" @bind-Value="deleteRegion.RegionImageUrl" For="@(() => deleteRegion.RegionImageUrl)" />
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteTheRegion">Delete Region</MudButton>
+        </MudForm>
+    </MudPaper>
+</div>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private MudForm form;
+    private Region deleteRegion = new Region();
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await _localStorageService.GetItemAsync<string>("JwtToken");
+        Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await Http.GetAsync($"api/regions/{Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            deleteRegion = await response.Content.ReadFromJsonAsync<Region>();
+        }
+    }
+    private async Task DeleteTheRegion()
+    {
+        try
+        {
+            var token = await _localStorageService.GetItemAsync<string>("JwtToken");
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //var response = await Http.PutAsJsonAsync($"api/regions/{deleteRegion.Id}", deleteRegion);
+            var response = await Http.DeleteAsync($"api/regions/{deleteRegion.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                // var jsonContent = JsonSerializer.Serialize(newRegion);
+                // var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                // // Send a POST request to the specified Uri with the given content
+                // var answer = await Http.PostAsync("api/regions", content);
+                _navigationManager.NavigateTo("/countryregions");
+            }
+            else
+            {
+                // Handle the error, possibly displaying a message to the user
+
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that occur during the HTTP request
+
+        }
+    }
+}

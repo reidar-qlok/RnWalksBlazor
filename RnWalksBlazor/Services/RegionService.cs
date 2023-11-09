@@ -18,12 +18,18 @@ namespace RnWalksBlazor.Services
         public async Task<List<Region>> GetAllRegionsAsync()
         {
             var token = await _localStorageService.GetItemAsync<string>("JwtToken");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (token == null)
+            {
+                // Starta en autoinlog med hårdkodat data
+            }
+
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             try
             {
                 var response = await _httpClient.GetAsync("api/Regions");
                 if (response.IsSuccessStatusCode)
                 {
+                    // jag är inloggad i apiet
                     var jsonString = await response.Content.ReadAsStringAsync();
                     return JsonSerializer.Deserialize<List<Region>>
                         (jsonString, new JsonSerializerOptions
@@ -31,6 +37,7 @@ namespace RnWalksBlazor.Services
                 }
                 else
                 {
+                    // Jag lyckades inte logga in i apiet
                     throw new Exception("Error connecting server");
                 }
             }
